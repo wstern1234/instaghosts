@@ -1,0 +1,303 @@
+/* styles.css */
+body {
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    background-color: #f0f4f8; /* Light mode background */
+    color: #37474f; /* Light mode text color */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+body.dark-mode {
+    background-color: #121212; /* Dark mode background */
+    color: #e0e0e0; /* Dark mode text color */
+}
+
+h1 {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 1px;
+    transition: color 0.3s ease; /* Smooth transition for heading color */
+}
+
+h2 {
+    text-align: center;
+    color: #2196f3; /* Strong blue for headings (unchanged) */
+    margin-bottom: 40px;
+    transition: color 0.3s ease; /* Smooth transition for heading color */
+}
+
+body.dark-mode h2 {
+    color: #64b5f6; /* Lighter blue for headings in dark mode */
+}
+
+#toggleDisclaimer {
+    display: block;
+    margin: 20px auto; /* Centered horizontally */
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ddecf3; /* Light grey */
+    color: #37474f; /* Dark text for contrast */
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#toggleDisclaimer:hover {
+    background-color: #ccdbe2; /* Slightly darker grey on hover */
+}
+
+body.dark-mode #toggleDisclaimer {
+    background-color: #1e1e1e; /* Slightly lighter than the dark mode background (#121212) */
+    color: #e0e0e0;
+}
+
+body.dark-mode #toggleDisclaimer:hover {
+    background-color: #2a2a2a; /* Slightly brighter when hovered */
+}
+
+#disclaimerContainer {
+    text-align: center;
+    display: none; /* Hidden by default */
+    margin: auto 5%;
+}
+
+p {
+    text-align: center;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: auto 5% 20px;
+    transition: color 0.3s ease; /* Smooth transition for paragraph color */
+}
+
+input[type="file"] {
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    border: 1px solid #bbdefb; /* Light blue border */
+    border-radius: 5px;
+    background-color: #e3f2fd; /* Light blue background */
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode input[type="file"] {
+    background-color: #333;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body.dark-mode input[type="file"]:hover {
+  background-color: #444;
+  border-color: #666;
+}
+
+.container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border: 1px solid #ddd; /* Keep the light gray border for tables */
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly translucent white for containers */
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    backdrop-filter: blur(5px); /* Subtle blur effect (may not work on all browsers) */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .container {
+    background-color: rgba(30, 30, 30, 0.9);
+    border-color: #444;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 15px;
+    background-color: #90caf9; /* Light blue background for headers */
+    border-bottom: 1px solid #ddd; /* Keep the light gray border for tables */
+    font-weight: 600;
+    color: #fff; /* White text color for headers */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+body.dark-mode .section-header {
+    background-color: #212121;
+    border-color: #444;
+    color: #fff;
+}
+
+.section-header:hover {
+    background-color: #64b5f6; /* Darker blue on hover */
+}
+
+body.dark-mode .section-header:hover {
+    background-color: #333;
+}
+
+.arrow {
+    margin-right: 10px;
+    transition: transform 0.2s ease-in-out;
+    color: #fff; /* White arrow color */
+    font-size: 18px;
+}
+
+.collapsed {
+    display: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    transition: border-color 0.3s ease;
+}
+
+body.dark-mode table {
+    border-color: #444;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: rgba(255, 255, 255, 0.8); /* Keep the translucent white for table cells */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode th,
+body.dark-mode td {
+    background-color: rgba(40, 40, 40, 0.8);
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+th {
+    background-color: rgba(242, 242, 242, 0.7); /* Keep the translucent light gray for table headers */
+    font-weight: 600;
+}
+
+body.dark-mode th {
+    background-color: rgba(50, 50, 50, 0.7);
+    color: #fff;
+}
+
+td a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+body.dark-mode td a {
+    color: #90caf9;
+}
+
+td a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+body.dark-mode td a:hover {
+    color: #64b5f6;
+}
+
+#tables {
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+#darkModeToggle {
+    position: absolute; /* Position it absolutely */
+    top: 2%; /* Adjust top position as needed */
+    right: 9%; /* Adjust right position as needed */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2196f3; /* Blue button */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#darkModeToggle:hover {
+    background-color: #1976d2; /* Darker blue on hover */
+}
+
+#toggleSteps {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ddecf3; /* Light grey */
+    color: #37474f; /* Dark text */
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#toggleSteps:hover {
+    background-color: #90a4ae; /* Slightly darker grey on hover */
+}
+
+#stepsContainer {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode #stepsContainer {
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #e0e0e0;
+}
+
+#stepsContainer h3 {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 15px;
+}
+
+body.dark-mode #stepsContainer h3 {
+    color: #64b5f6;
+}
+
+#stepsContainer p {
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#stepsContainer ol {
+    padding-left: 20px;
+}
+
+#stepsContainer ol li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#fileLabel {
+    margin-top: 60px;
+    display: block;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #37474f; /* Matches the text color */
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+body.dark-mode #fileLabel {
+    color: #e0e0e0; /* Light text for dark mode */
+}

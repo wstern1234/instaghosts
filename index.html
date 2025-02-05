@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Data Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+    <h1>Want to find out who you're following but isn't following you back?</h1>
+    <h2>You're at the right place.</h2>
+
+    <p>
+        Instagram already shows you your <i>followers</i> that you aren't <u>following</u>, but it doesn't do the opposite.
+    </p>
+
+    <p>
+        I created this site to show you your Insta Ghosts: accounts you're <u>following</u> that 
+        aren't your <i>follower</i>. The best part? It's <b>completely anonymous</b>.
+    </p>
+
+    <button id="toggleDisclaimer">Why is it so safe?</button>
+    <div id="disclaimerContainer">
+        <p>
+            It might sound biased since I this is my work, but this is the only website I've found that can prove it's 100% 
+            anonymous and safe for you (the site's code for those who want to verify). I wrote this website from scratch, 
+            so there's no 3rd parties used here that could steal your information, nor any hacky method of accessing Instagram 
+            for account data.
+        </p>
+        <p>
+            This means that by using instaghosts.com, Instagram won't ban you, I won't get sued, and I can't see that you 
+            were using instaghosts.com. Most importantly though, this means no hacker or myself can see your IG or your zip 
+            file during your entire time here. As soon as you reload/close the tab, the zip file is gone and you have to 
+            reupload it if you want to use it again. Sorry for the inconvenience, but at least you're completely safe the 
+            entire time you're here.
+        </p>
+    </div>
+
+    <button id="toggleSteps">Hide steps</button>
+    <div id="stepsContainer">
+        <h3>How to Get and Upload Your Zip File</h3>
+        <p>
+            These steps will guide you through obtaining your Instagram data in a zip file and uploading it here. 
+            This process is designed to be <strong>easy and anonymous</strong>—only <strong>you</strong> will have access to your data. 
+            If you change your mind at any point, don’t worry—you don’t have to undo anything.
+        </p>
+        <ol>
+            <li>Go to your Instagram profile page and open <strong>Settings</strong> (☰ menu in the top right).</li>
+            <li>Tap <strong>"Accounts Center"</strong>.</li>
+            <li>Scroll down and select <strong>"Your information and permissions"</strong>.</li>
+            <li>Tap <strong>"Download your information"</strong>, then select <strong>"Download or transfer information"</strong>.</li>
+            <li>Choose <strong>"Some of your information"</strong>.</li>
+            <li>Scroll down, select <strong>"Followers and following"</strong>, and tap <strong>"Next"</strong>.</li>
+            <li>Select <strong>"Download to device"</strong>.</li>
+            <li>Tap <strong>"Date range"</strong>, choose <strong>"All time"</strong>, and press <strong>"Save"</strong>.</li>
+            <li>Tap <strong>"Create files"</strong>—you’ll receive an email from Instagram when your data is ready.</li>
+        </ol>
+
+        <h3>How to Download and Upload Your Zip File</h3>
+        <p>
+            Now that you've requested your data, follow these steps to download your zip file from Instagram and upload it here.
+        </p>
+        <ol>
+            <li>Either wait a few minutes (about <strong>10 minutes at most</strong>) or wait for the email from Instagram confirming your zip file is ready.</li>
+            <li>Navigate back to <strong>"Download your information"</strong> (as you did in step 4 above) and click <strong>"Download"</strong> on your file (typically starts with <em>"01/01/04"</em> and ends with <em>"specific information download"</em>).</li>
+            <li>Instagram will ask you to <strong>re-enter your password</strong> (on their site, not on instaghosts.com), then click <strong>"Continue"</strong>.</li>
+            <li>Download your zip file to <strong>Files</strong> (or any preferred location—this doesn’t necessarily matter).</li>
+            <li>Go back to <strong>instaghosts.com</strong>, click <strong>"Choose File"</strong>, then select your zip file to upload. Now you can see your <strong>Ghosts</strong> and other interesting data!</li>
+        </ol>
+    </div>
+
+    <label for="zipInput" id="fileLabel">Anonymously upload Your IG zip file:</label>
+    <input type="file" id="zipInput" accept=".zip">
+    <div id="tables"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
