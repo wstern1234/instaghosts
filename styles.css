@@ -301,3 +301,38 @@ body.dark-mode #stepsContainer h3 {
 body.dark-mode #fileLabel {
     color: #e0e0e0; /* Light text for dark mode */
 }
+
+#siteFooter {
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    color: #37474f; /* Default text color */
+    margin-top: 30px;
+    border-top: 1px solid #ddd;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#siteFooter a {
+    color: #2196f3; /* Blue link color */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease-in-out;
+}
+
+#siteFooter a:hover {
+    color: #1565c0; /* Darker blue on hover */
+}
+
+body.dark-mode #siteFooter {
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #e0e0e0;
+    border-top: 1px solid #444;
+}
+
+body.dark-mode #siteFooter a {
+    color: #64b5f6;
+}
+
+body.dark-mode #siteFooter a:hover {
+    color: #90caf9;
+}
