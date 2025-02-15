@@ -1,43 +1,29 @@
-// script.js
+// Handle the disclaimer toggle
 document.getElementById('toggleDisclaimer').addEventListener('click', function () {
     const disclaimer = document.getElementById('disclaimerContainer');
-    if (disclaimer.style.display === 'none' || disclaimer.style.display === '') {
-        disclaimer.style.display = 'block';
-        this.textContent = 'Hide explanation';
-    } else {
-        disclaimer.style.display = 'none';
-        this.textContent = 'Why so many steps?';
-    }
+    disclaimer.style.display = disclaimer.style.display === 'none' || disclaimer.style.display === '' ? 'block' : 'none';
+    this.textContent = disclaimer.style.display === 'block' ? 'Hide explanation' : 'Why is it so safe?';
 });
 
 // Hide the disclaimer by default
 document.getElementById('disclaimerContainer').style.display = 'none';
 
+// Handle the steps toggle
 const stepsContainer = document.getElementById('stepsContainer');
 const toggleStepsBtn = document.getElementById('toggleSteps');
-
-// Ensure steps are visible by default
 stepsContainer.style.display = 'block';
 
-// Toggle steps visibility
 toggleStepsBtn.addEventListener('click', function () {
-    if (stepsContainer.style.display === 'block') {
-        stepsContainer.style.display = 'none';
-        this.textContent = 'Show steps';
-    } else {
-        stepsContainer.style.display = 'block';
-        this.textContent = 'Hide steps';
-    }
+    stepsContainer.style.display = stepsContainer.style.display === 'block' ? 'none' : 'block';
+    this.textContent = stepsContainer.style.display === 'block' ? 'Hide steps' : 'Show steps';
 });
 
+// Handle ZIP file upload
 document.getElementById('zipInput').addEventListener('change', handleZipUpload);
 
 async function handleZipUpload(event) {
     const file = event.target.files[0];
-    if (!file) {
-        console.log("No file selected.");
-        return;
-    }
+    if (!file) return console.log("No file selected.");
 
     console.log(`File selected: ${file.name}`);
 
@@ -46,14 +32,10 @@ async function handleZipUpload(event) {
         const zipData = await zip.loadAsync(file);
         console.log("ZIP file loaded successfully.");
 
-        const allFiles = Object.keys(zipData.files); //For debugging
-        console.log("Files in ZIP:", allFiles); //For debugging
-
         const filePaths = {
-            following: `connections/followers_and_following/following.html`,
             followers: `connections/followers_and_following/followers_1.html`,
-            pendingRequests: `connections/followers_and_following/pending_follow_requests.html`,
-            recentlyUnfollowed: `connections/followers_and_following/recently_unfollowed_profiles.html`,
+            following: `connections/followers_and_following/following.html`,
+            pendingFollowRequests: `connections/followers_and_following/pending_follow_requests.html`,
             recentFollowRequests: `connections/followers_and_following/recent_follow_requests.html`
         };
 
@@ -64,47 +46,47 @@ async function handleZipUpload(event) {
                 console.log(`Extracting: ${path}`);
                 const fileContent = await zipData.files[path].async("text");
                 userLists[key] = extractUsernames(fileContent);
-                console.log(`${key} contains ${userLists[key].size} users.`);
+                console.log(`${key} contains ${userLists[key].length} users.`);
             } else {
                 console.warn(`File not found: ${path}`);
-                userLists[key] = new Set();
+                userLists[key] = [];  // Initialize as empty array
             }
         }
 
-        generateTables(userLists);
+        // Calculate "Your Ghosts" and "Self Ghosts"
+        const yourGhosts = userLists.following.filter(user => !userLists.followers.includes(user));
+        const selfGhosts = userLists.followers.filter(user => !userLists.following.includes(user));
+
+        // Generate tables
+        generateTables({
+            "Your Ghosts": yourGhosts,
+            "Self Ghosts": selfGhosts,
+            "Pending Follow Requests": userLists.pendingFollowRequests,
+            "Recent Follow Requests": userLists.recentFollowRequests
+        });
+
     } catch (error) {
         console.error("Error processing ZIP file:", error);
     }
 }
 
+// Extract usernames using querySelectorAll for better accuracy
 function extractUsernames(htmlContent) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, "text/html");
-    const users = new Set();
-    doc.querySelectorAll("a").forEach(link => {
-        users.add(link.textContent.trim());
-    });
-    console.log(`Extracted ${users.size} usernames from HTML.`);
-    return users;
+
+    return Array.from(doc.querySelectorAll('a[target="_blank"]'))
+        .map(a => a.href.replace('https://www.instagram.com/', '').replace('/', ''))
+        .filter(username => username.length > 0);
 }
 
+// Generate the tables for displaying the user data
 function generateTables(userLists) {
     const tablesContainer = document.getElementById('tables');
     tablesContainer.innerHTML = "";
 
-    const dataCategories = [
-        { title: "Your Ghosts", data: [...userLists.following].filter(user => !userLists.followers.has(user)) },
-        { title: "Self Ghosts", data: [...userLists.followers].filter(user => !userLists.following.has(user)) },
-        { title: "Pending Follow Requests", data: [...userLists.pendingRequests] },
-        { title: "You Recently Unfollowed", data: [...userLists.recentlyUnfollowed] },
-        { title: "Pending or Denied Your Follow", data: [...userLists.recentFollowRequests].filter(user => !userLists.following.has(user)) } // Renamed
-    ];
-
-    dataCategories.forEach((category, index) => {
+    Object.entries(userLists).forEach(([title, data], index) => {
         const tableId = `table-${index}`;
-        const title = category.title;
-        const data = category.data;
-
         const sectionHTML = `
         <div class="container">
             <div class="section-header" onclick="toggleTable('${tableId}', this)">
@@ -117,11 +99,11 @@ function generateTables(userLists) {
             </div>
         </div>
     `;
-
         tablesContainer.innerHTML += sectionHTML;
     });
 }
 
+// Toggle table visibility
 function toggleTable(tableId, header) {
     const table = document.getElementById(tableId);
     const arrow = header.querySelector(".arrow");
@@ -135,21 +117,14 @@ function toggleTable(tableId, header) {
     }
 }
 
+// Dark mode toggle functionality
 const darkModeToggle = document.getElementById('darkModeToggle');
 darkModeToggle.addEventListener('click', toggleDarkMode);
 
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-        darkModeToggle.textContent = 'Light';
-    } else {
-        darkModeToggle.textContent = 'Dark';
-    }
+    darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';
 }
 
 // Set initial button text
-if (document.body.classList.contains('dark-mode')) {
-    darkModeToggle.textContent = 'Light';
-} else {
-    darkModeToggle.textContent = 'Dark';
-}
+darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';

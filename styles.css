@@ -324,7 +324,6 @@ body.dark-mode #fileLabel {
 }
 
 body.dark-mode #siteFooter {
-    background-color: rgba(30, 30, 30, 0.9);
     color: #e0e0e0;
     border-top: 1px solid #444;
 }
