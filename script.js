@@ -19,11 +19,14 @@ toggleStepsBtn.addEventListener('click', function () {
 });
 
 // Handle ZIP file upload
-document.getElementById('zipInput').addEventListener('change', handleZipUpload);
+document.getElementById("zipInput").addEventListener("change", handleZipUpload);
 
 async function handleZipUpload(event) {
     const file = event.target.files[0];
-    if (!file) return console.log("No file selected.");
+    if (!file) {
+        console.log("No file selected.");
+        return;
+    }
 
     console.log(`File selected: ${file.name}`);
 
@@ -32,11 +35,19 @@ async function handleZipUpload(event) {
         const zipData = await zip.loadAsync(file);
         console.log("ZIP file loaded successfully.");
 
+        const allFiles = Object.keys(zipData.files);
+        console.log("Files in ZIP:", allFiles);
+
+        // Detect if the data is JSON or HTML based on folder structure
+        const isJSON = allFiles.some(path => path.startsWith("connections/followers_and_following/") && path.endsWith(".json"));
+        console.log(`Detected format: ${isJSON ? "JSON" : "HTML"}`);
+
+        // Define file paths based on detected format
         const filePaths = {
-            followers: `connections/followers_and_following/followers_1.html`,
-            following: `connections/followers_and_following/following.html`,
-            pendingFollowRequests: `connections/followers_and_following/pending_follow_requests.html`,
-            recentFollowRequests: `connections/followers_and_following/recent_follow_requests.html`
+            following: `connections/followers_and_following/following.${isJSON ? "json" : "html"}`,
+            followers: `connections/followers_and_following/followers_1.${isJSON ? "json" : "html"}`,
+            pendingFollowRequests: `connections/followers_and_following/pending_follow_requests.${isJSON ? "json" : "html"}`,
+            recentFollowRequests: `connections/followers_and_following/recent_follow_requests.${isJSON ? "json" : "html"}`
         };
 
         const userLists = {};
@@ -45,48 +56,84 @@ async function handleZipUpload(event) {
             if (zipData.files[path]) {
                 console.log(`Extracting: ${path}`);
                 const fileContent = await zipData.files[path].async("text");
-                userLists[key] = extractUsernames(fileContent);
-                console.log(`${key} contains ${userLists[key].length} users.`);
+
+                // Process JSON or HTML while keeping existing logic unchanged
+                userLists[key] = isJSON ? extractUsernamesFromJSON(fileContent) : extractUsernamesFromHTML(fileContent);
+
+                console.log(`${key} contains ${userLists[key].size} users.`);
             } else {
                 console.warn(`File not found: ${path}`);
-                userLists[key] = [];  // Initialize as empty array
+                userLists[key] = new Set();
             }
         }
 
-        // Calculate "Your Ghosts" and "Self Ghosts"
-        const yourGhosts = userLists.following.filter(user => !userLists.followers.includes(user));
-        const selfGhosts = userLists.followers.filter(user => !userLists.following.includes(user));
+        // Now calculate "Your Ghosts" and "Self Ghosts" by set differences
+        const yourGhosts = [...userLists.following].filter(user => !userLists.followers.has(user));
+        const selfGhosts = [...userLists.followers].filter(user => !userLists.following.has(user));
 
-        // Generate tables
-        generateTables({
-            "Your Ghosts": yourGhosts,
-            "Self Ghosts": selfGhosts,
-            "Pending Follow Requests": userLists.pendingFollowRequests,
-            "Recent Follow Requests": userLists.recentFollowRequests
-        });
+        userLists.yourGhosts = new Set(yourGhosts);
+        userLists.selfGhosts = new Set(selfGhosts);
 
+        generateTables(userLists);
     } catch (error) {
         console.error("Error processing ZIP file:", error);
     }
 }
 
-// Extract usernames using querySelectorAll for better accuracy
-function extractUsernames(htmlContent) {
+// Extract usernames from JSON content
+function extractUsernamesFromJSON(jsonContent) {
+    try {
+        const jsonData = JSON.parse(jsonContent);
+        const usernames = new Set();
+
+        if (jsonData.relationships_following) {
+            jsonData.relationships_following.forEach(entry => usernames.add(entry.string_list_data[0].value));
+        } else if (jsonData.relationships_follow_requests_sent) {
+            jsonData.relationships_follow_requests_sent.forEach(entry => usernames.add(entry.string_list_data[0].value));
+        } else if (jsonData.relationships_permanent_follow_requests) {
+            jsonData.relationships_permanent_follow_requests.forEach(entry => usernames.add(entry.string_list_data[0].value));
+        } else {
+            jsonData.forEach(entry => usernames.add(entry.string_list_data[0].value));
+        }
+
+        return usernames;
+    } catch (error) {
+        console.error("Error parsing JSON data:", error);
+        return new Set();
+    }
+}
+
+// Extract usernames from HTML content
+function extractUsernamesFromHTML(htmlContent) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, "text/html");
+    const users = new Set();
 
-    return Array.from(doc.querySelectorAll('a[target="_blank"]'))
-        .map(a => a.href.replace('https://www.instagram.com/', '').replace('/', ''))
-        .filter(username => username.length > 0);
+    doc.querySelectorAll('a[target="_blank"]').forEach(a => {
+        const username = a.href.replace("https://www.instagram.com/", "").replace("/", "");
+        if (username) users.add(username);
+    });
+
+    return users;
 }
 
 // Generate the tables for displaying the user data
 function generateTables(userLists) {
-    const tablesContainer = document.getElementById('tables');
+    const tablesContainer = document.getElementById("tables");
     tablesContainer.innerHTML = "";
 
-    Object.entries(userLists).forEach(([title, data], index) => {
+    const dataCategories = [
+        { title: "Your Ghosts", data: [...userLists.yourGhosts] },
+        { title: "Self Ghosts", data: [...userLists.selfGhosts] },
+        { title: "Pending Follow Requests", data: [...userLists.pendingFollowRequests] },
+        { title: "Recent Follow Requests", data: [...userLists.recentFollowRequests] }
+    ];
+
+    dataCategories.forEach((category, index) => {
         const tableId = `table-${index}`;
+        const title = category.title;
+        const data = category.data;
+
         const sectionHTML = `
         <div class="container">
             <div class="section-header" onclick="toggleTable('${tableId}', this)">
@@ -94,11 +141,12 @@ function generateTables(userLists) {
             </div>
             <div id="${tableId}" class="collapsed">
                 ${data.length > 0
-                    ? `<table><tbody>${data.map(user => `<tr><td><a href="https://www.instagram.com/${user}" target="_blank" rel="noopener noreferrer" title="${user}">${user}</a></td></tr>`).join('')}</tbody></table>`
+                    ? `<table><tbody>${data.map(user => `<tr><td><a href="https://www.instagram.com/${user}" target="_blank" rel="noopener noreferrer" title="${user}">${user}</a></td></tr>`).join("")}</tbody></table>`
                     : `<table><tbody><tr><td colspan="1">Nothing to show here</td></tr></tbody></table>`}
             </div>
         </div>
     `;
+
         tablesContainer.innerHTML += sectionHTML;
     });
 }
@@ -118,13 +166,13 @@ function toggleTable(tableId, header) {
 }
 
 // Dark mode toggle functionality
-const darkModeToggle = document.getElementById('darkModeToggle');
-darkModeToggle.addEventListener('click', toggleDarkMode);
+const darkModeToggle = document.getElementById("darkModeToggle");
+darkModeToggle.addEventListener("click", toggleDarkMode);
 
 function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';
+    document.body.classList.toggle("dark-mode");
+    darkModeToggle.textContent = document.body.classList.contains("dark-mode") ? "Light" : "Dark";
 }
 
 // Set initial button text
-darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Light' : 'Dark';
+darkModeToggle.textContent = document.body.classList.contains("dark-mode") ? "Light" : "Dark";
